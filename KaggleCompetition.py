@@ -15,7 +15,6 @@ X = train_df.drop('Hardness', axis=1)
 y = train_df['Hardness']
 X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Assuming 'train_df' is your DataFrame with the data
 X = train_df.drop('Hardness', axis=1)  # Features
 y = train_df['Hardness']  # Target variable
 
