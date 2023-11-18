@@ -109,6 +109,50 @@ y_pred_final = final_model.predict(X_test)
 medae_final = median_absolute_error(y_test, y_pred_final)
 print(f"Final Model MedAE: {medae_final}")
 
+import warnings
+warnings.filterwarnings('ignore')
+from keras.models import Sequential, model_from_json
+from keras.layers import Dense
+from keras.optimizers import RMSprop
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+
+X = train_df.drop(['id', 'Hardness'], axis=1)
+y = train_df['Hardness']  # Target variable
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Standardize the features using StandardScaler
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# Create the neural network model
+model = Sequential()
+model.add(Dense(256, activation='relu', input_shape=(X_train_scaled.shape[1],)))
+model.add(Dense(256, activation='relu'))
+model.add(Dense(256, activation='relu'))
+model.add(Dense(256, activation='relu'))
+model.add(Dense(1, activation='linear'))
+
+model.summary()
+
+# Compile the model
+model.compile(loss='mean_absolute_error', optimizer='adam', metrics=['mean_absolute_error'])
+
+# Train the model
+history = model.fit(X_train_scaled, y_train, batch_size=32, epochs=100, verbose=2)
+
+# Evaluate the model on the test set
+test_results = model.evaluate(X_test_scaled, y_test, verbose=1)
+
+# Make predictions on the test set
+predictions = model.predict(X_test_scaled)
+
+# Evaluate the model
+mae = mean_absolute_error(y_test, predictions)
+print(f'Mean Absolute Error (MAE): {mae}')
+
 X = test_df.drop(['id'], axis=1)
 X_test_scaled = scaler.transform(X)
 X_test_reshaped = X_test_scaled.reshape((X_test_scaled.shape[0], X_test_scaled.shape[1], 1))
